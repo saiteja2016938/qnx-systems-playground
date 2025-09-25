@@ -11,7 +11,7 @@ I created my own working environment with all the necessary requirements to succ
 
 The key things I achieved:
 - Built my own project environment from scratch.  
-- Created all required "Makefile, build files, and header files**.  
+- Created all required "Makefile, build files, and header files".  
 - Automated the building and running process using the Makefile.  
 - Understood the flow of execution between server and client programs.  
 - Successfully rebuilt and executed the server and client code so that they communicate with each other.  
