@@ -1,0 +1,113 @@
+ Remote Access to QNX RTOS on Raspberry Pi via SSH
+ Overview
+
+This guide explains how to remotely access a QNX 8.0 RTOS running on a Raspberry Pi using SSH (Secure Shell).
+The goal is to establish a developer-friendly remote terminal connection between a host laptop and the Raspberry Pi board running QNX.
+
+This setup allows you to:
+
+Control and monitor the QNX target directly from your laptop.
+
+Run commands, transfer files, and test device drivers remotely.
+
+Build and deploy QNX applications efficiently without needing a monitor or keyboard connected to the Raspberry Pi.
+
+System Requirements
+Component	Description
+Hardware	Raspberry Pi (any model with Ethernet/Wi-Fi support)
+Software	QNX SDP 8.0 installed and booted on SD card
+Network	Router with DHCP enabled
+Client Machine	Laptop (Windows/Linux/macOS) with PuTTY or SSH client
+Connection Type	Ethernet or Wi-Fi
+
+Step 1: Flash QNX to SD Card
+
+Use QNX SDP tools to build a suitable image for the Raspberry Pi (example: ifs-rpi-aarch64.raw).
+
+Flash the image to an SD card using:
+
+balinaEtcher
+
+Insert the SD card into the Raspberry Pi.
+
+Step 2: Boot the Raspberry Pi
+
+Connect:
+
+Power supply
+
+Ethernet cable to router
+
+Power on the board.
+
+Wait until QNX boots successfully. You’ll see boot messages on HDMI if connected.
+
+Step 3: Find Raspberry Pi’s IP Address
+
+Since QNX is connected to your local network, it receives an IP via DHCP.
+
+Option 1 – Using Fing App (on mobile)
+
+Install the Fing app on your phone.
+
+Scan your local network.
+
+Note down the device named something like Generic or QNX Target (e.g., 192.168.1.33).
+
+Option 2 – From Router Admin Page
+
+Log into your router’s admin page.
+
+Find the connected device list.
+
+Identify your Raspberry Pi by its MAC address prefix (b8:27:eb or d8:3a:dd).
+
+Step 4: SSH into QNX Target
+For Windows:
+
+Use PuTTY:
+
+Hostname: <your_rpi_ip> (eg :192.168.1.33)
+
+Port: 22
+
+Connection Type: SSH
+
+Click Open.
+When prompted:
+
+login as: root
+Password: <press Enter if no password>
+
+
+You should see:
+
+root@qnxpi:/root#
+
+
+Congratulations! You are now inside the QNX terminal remotely.
+
+Step 5: Understanding What’s Happening
+
+When QNX boots, it starts the sshd service, which listens on port 22.
+This allows remote users to connect using SSH protocol.
+
+You verified this using:
+
+pidin | grep sshd
+
+
+Output:
+
+system/bin/sshd
+system/bin/sshd-session
+
+
+This confirms the SSH daemon is active and ready to accept connections.
+
+Step 6: Useful Commands
+Command	Description
+whoami	Shows the current logged-in user
+ifconfig	Displays network interface details
+ls /dev	Lists available device files
+exit	Logs out from SSH session
