@@ -1,0 +1,130 @@
+Overview
+
+This section explains how to test I²C communication between a Raspberry Pi running QNX 8.0 and an MPU6050 sensor module.
+
+You’ll learn how to:
+
+Verify I²C bus availability in QNX
+
+Scan for connected I²C devices
+
+Identify the MPU6050 address
+
+Communicate with the sensor (read/write registers)
+
+System Setup
+Component	Description
+Target Board	Raspberry Pi with QNX 8.0 RTOS image
+Sensor Module	MPU6050 (I²C Accelerometer + Gyroscope)
+Connection Type	I²C (SCL, SDA, GND, VCC)
+Access Method	SSH remote terminal
+Tools Used	isendrecv, devctl, pidin
+Step 1: Verify I²C Bus Devices in QNX
+
+After SSH access to QNX:
+
+ls -l /dev/i2c*
+
+
+Output Example:
+
+crw-rw---- 1 root root 0, 1 1970-01-01 00:00 /dev/i2c0
+crw-rw---- 1 root root 0, 1 1970-01-01 00:00 /dev/i2c1
+
+ This means the QNX kernel has detected and created device files for both I²C buses.
+
+/dev/i2c0 → Primary I²C channel
+
+/dev/i2c1 → Secondary I²C channel (typically connected to GPIO pins on Raspberry Pi header)
+
+Step 2: Scan for I²C Devices
+
+To identify connected sensors on the I²C bus, you can use a small loop to scan all possible addresses:
+
+for a in $(seq 0x03 0x77); do
+  printf "Address 0x%02x: " $a
+  isendrecv -n /dev/i2c1 -a $a -l 1 0x00 >/dev/null 2>&1 && echo "found" || echo "-"
+done
+
+
+isendrecv is a QNX utility that sends and receives I²C messages.
+
+The loop goes through every I²C address (0x03–0x77).
+
+If a device responds, “found” is printed.
+
+Sample Output:
+
+Address 0x68: found
+
+
+The MPU6050 responded at 0x68, confirming that it’s connected properly.
+
+Step 3: Read WHO_AM_I Register
+
+Each I²C device has an identification register.
+For the MPU6050, the WHO_AM_I register (0x75) should return 0x68.
+
+Run:
+
+isendrecv -n /dev/i2c1 -a 0x68 -l 1 0x75
+
+
+Expected Output:
+
+data: 75h
+Data recvd: 68h
+
+
+This confirms the Raspberry Pi (via QNX) is successfully reading data from the MPU6050.
+
+Step 4: Wake the MPU6050 from Sleep Mode
+
+By default, the MPU6050 is in sleep mode after power-on.
+To wake it up, write 0x00 to the Power Management register (0x6B):
+
+isendrecv -n /dev/i2c1 -a 0x68 -o 0x6B -d 1 0x00
+
+
+Explanation:
+
+-o 0x6B → register address (Power Management)
+
+-d 1 → sending 1 byte of data
+
+0x00 → value to write (wake-up command)
+
+If the command returns no error, the sensor is now active.
+
+ Step 5: Read Sensor Data (Preview)
+
+The MPU6050 stores raw sensor readings in these registers:
+
+Data Type	Register Range	Description
+Accelerometer	0x3B–0x40	6 bytes (X, Y, Z)
+Temperature	0x41–0x42	2 bytes
+Gyroscope	0x43–0x48	6 bytes (X, Y, Z)
+
+To read accelerometer data (for example, X-axis high byte):
+
+isendrecv -n /dev/i2c1 -a 0x68 -l 1 0x3B
+
+
+Next steps (to be implemented later in your driver project) will include reading all these registers sequentially, combining high and low bytes, and converting the raw values into g (acceleration) and °/s (angular velocity).
+
+Step 6: Troubleshooting Tips
+Problem	Possible Cause	Fix
+No device found during scan	Wrong wiring or bus number	Check SDA/SCL pins; try /dev/i2c0
+Permission denied error	Running as normal user	Switch to root using su
+Wrong WHO_AM_I value	Sensor not powered or faulty	Verify 3.3V and GND wiring
+Input/output error	Bus communication issue	Check pull-up resistors or loose wires
+
+Step 7: What You’ve Learned
+
+By completing this phase, you now understand:
+
+How QNX represents I²C devices using /dev/i2c* nodes.
+
+How to scan, read, and write to I²C devices directly from the shell.
+
+The structure of MPU6050 registers and basic communication sequence.
