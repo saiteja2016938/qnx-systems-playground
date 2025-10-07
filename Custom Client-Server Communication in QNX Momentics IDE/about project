@@ -1,0 +1,91 @@
+ Overview
+
+This project demonstrates a custom client-server communication system built entirely in C within the QNX Momentics IDE environment.
+The objective was to implement low-level socket programming without using any external frameworks — purely based on POSIX network APIs — to understand how communication works between processes in a real-time operating system.
+
+This project reflects my practical exploration of QNX RTOS, networking concepts, and manual Makefile-based builds for embedded applications.
+
+ Environment Setup
+
+Platform: QNX Momentics IDE
+
+Operating System: QNX RTOS
+
+Language: C
+
+Build System: Custom Makefile (for modular compilation and linking)
+
+
+These headers enable socket creation, network address handling, inter-process communication, and standard input-output functionality.
+
+Program Structure
+
+The project consists of two main C programs:
+
+server.c
+
+client.c
+
+ Communication Flow
+
+Client → Server: The client initiates a connection request to a specific IP and port.
+
+Server → Client: The server accepts the connection and sends back its PID.
+
+Verification: The client displays the received PID, confirming two-way communication.
+
+Both processes then close their sockets after successful interaction.
+
+This PID exchange showcases basic inter-process identity verification and is useful in embedded or distributed control systems.
+
+Key Features
+
+Complete manual setup — no libraries or external frameworks.
+
+Custom Makefile for compiling, linking, and cleaning build files efficiently.
+
+Demonstrates low-level TCP/IP socket communication.
+
+Fully functional on QNX RTOS, ideal for real-time and embedded systems.
+
+Emphasis on data integrity and process-level awareness.
+
+ What I Learned
+
+Setting up and building C projects in QNX Momentics IDE.
+
+Writing Makefiles for multiple source files and custom targets.
+
+Implementing and debugging TCP socket communication at the OS level.
+
+Understanding PID exchange and inter-process identity in client-server architecture.
+
+Managing system calls and error handling in real-time environments.
+
+🚀 Applications
+
+Embedded communication systems
+
+Industrial control networks
+
+Real-time data acquisition systems
+
+IoT device-to-gateway communication
+
+Process coordination in QNX-based setups
+
+Project Demonstration
+
+Image 1: QNX Momentics IDE showing both client and server C files.
+Image 2: Terminal output confirming successful connection and PID exchange.
+
+(You can upload your project screenshots here as images/server_client_qnx1.jpg, images/server_client_qnx2.jpg, etc.)
+
+Developer
+
+Erukondi Sai Teja
+Department of Electronics and Communication Engineering
+Vardhaman College of Engineering, Hyderabad
+
+ Email: erukondisaiteja@gmail.com
+ GitHub: github.com/saiteja2016938
